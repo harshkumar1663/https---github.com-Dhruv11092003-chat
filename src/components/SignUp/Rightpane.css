@@ -1,0 +1,38 @@
+.right-pane-signup{
+    height: 500px;
+    width: 400px;
+    background-image: url("../../../public/images/sign-up_pane_right.jpg");
+    
+    background-size: cover;
+    box-sizing: border-box;
+    z-index: 0;
+    border-top-right-radius: 0.5rem ;
+    border-bottom-right-radius: 0.5rem;
+
+}
+
+.welcome{
+    padding-top: 100px;
+    font-size: 40px;
+    color: white;
+    /* -webkit-text-stroke: 0.5px rgb(0 0 0 / 1); */
+    letter-spacing: 2px;
+    text-align: center;
+    /* font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; */
+    font-family: 'Open Sans', sans-serif;
+}
+
+.not-member{
+    padding: 0;
+    margin-left: 72px;
+    margin-bottom: 0;
+    margin-top: 30px;
+    color: white;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.signup-cont{
+    margin-top: 0px;
+    display: grid;
+    row-gap: 2px;
+}

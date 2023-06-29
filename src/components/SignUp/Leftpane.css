@@ -1,0 +1,40 @@
+.left-pane-signup{
+    height: 100%;
+    width: 450px;
+    background-color: white;
+    box-sizing: border-box;
+    z-index: 2;
+    border-top-left-radius: 0.5rem ;
+    border-bottom-left-radius: 0.5rem;
+}
+
+.signin{
+    text-align: left;
+    margin-left: 40px;
+    padding-top: 20px;
+    color: rgb(0 0 0 / 0.8);
+    /* font-family:sans-serif; */
+    font-family: 'Open Sans', sans-serif;
+    font-size: 30px;
+}
+
+.error{
+    width: 65%;
+}
+
+.profile-picture img{
+    height: 100px;
+    width: 100px;
+}
+.dp-btn{
+    background-color: red;
+}
+input[type="file"] {
+    display: none;
+}
+.select-dp{
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s all linear;
+
+}

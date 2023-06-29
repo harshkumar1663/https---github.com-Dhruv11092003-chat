@@ -1,0 +1,26 @@
+.preview-container{
+    height: 70px;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: rgba(0 0 0 / 0.05);
+    display: flex;
+    align-items: center;
+    justify-self: center;
+    padding: 20px 10px;
+}
+.profile-picture{
+    font-size: 30px;
+    flex-basis: 30%;
+}
+.profile-picture img{
+    height: 60px;
+    width: 60px;
+}
+.chat_preview_name{
+    font-size: 18px;
+    font-weight: normal;
+    letter-spacing: 1px;
+}
+.contacts-container{
+    position: relative;
+}

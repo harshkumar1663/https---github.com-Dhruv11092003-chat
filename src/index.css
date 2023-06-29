@@ -4,10 +4,31 @@ body {
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  -moz-osx-font-smoothing: grayscale;  
+  overflow-y: hidden;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  monospace;
+}
+
+.main-pane-cont{
+  background: url("../public/images/sign-up_bg.jpg") center center no-repeat;
+  background-size: cover;
+  height: 100vh;
+}
+
+
+@media screen and (min-width:1440px) {
+
+  .right-pane{
+    width: 50%;
+  }
+  .left-pane{
+    width: 50%;
+  }
+  input{
+    width: 90%;
+  }
 }

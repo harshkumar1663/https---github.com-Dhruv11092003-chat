@@ -1,0 +1,32 @@
+.username{
+    display: block;
+    padding-bottom: 0.15rem;
+    font-size: 13px;
+    color: rgba(0 0 0 /0.6);
+}
+.ml-40{
+    margin-left: 40px;
+}
+.input{
+    padding: 5px;
+    font-size: 20px;
+    width: 68%;
+    border: 2px solid rgba(107, 114, 128, 0.5);
+    border-radius: 0.32rem;
+    transition: 0.2s all ;
+    margin-bottom: 15px;
+    box-shadow: 2px 2px 3px 0px rgba(107, 114, 128, 0.5);
+
+}
+.input-field{
+    display: flex;
+}
+.input-icon{
+    transform: translate(-30px , 6px);
+    transition: 0.2s all linear;
+}
+.input:focus{
+    border: 2px solid #9a30e4;
+    outline: none;
+    transition: 0.2s all ;
+}

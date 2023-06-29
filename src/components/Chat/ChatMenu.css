@@ -1,0 +1,30 @@
+.menu-container{
+    height: 100%;
+    width: 17%;
+    flex-basis: 17%;
+    overflow: hidden;
+    background-color: #fcec7c;
+    color: #960e85;
+    /* padding: 5px 5px; */
+}
+.menu-container p , a{
+    text-decoration: none;
+    cursor: pointer;
+    padding: 0;
+    color: black;
+}
+.profile{
+    padding: 10px 10px;
+    text-align: center;
+    font-size: 20px;
+    letter-spacing: 2px;
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+.chat , .contacts , .settings , .friend-requests{
+    text-align: center;
+}
+.logout{
+    text-align: center;
+    padding-top: 60px;
+}

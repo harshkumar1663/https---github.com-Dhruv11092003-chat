@@ -1,0 +1,57 @@
+.button {
+    margin-top: 10px;
+    font-size: 14px;
+    letter-spacing: 3px;
+    border: 2px solid rgba(107, 114, 128, 0.5);
+    border-radius: 0.32rem;
+    padding: 7px 20px;
+    box-sizing: border-box;
+    width: 66%;
+    cursor: pointer;
+    transition: 0.2s all ease-in;
+    box-shadow: 2px 2px 2px 0px rgba(107, 114, 128, 0.5);
+    border: 2px solid  rgba(107, 114, 128, 0.5);
+}
+
+.request{
+    padding: 7px 20px;
+    width: 140px;
+}
+
+.small{
+    font-size: 12px;
+    height: 30px;
+    margin: 0;
+    padding: 3px 10px;
+    width: 100px;
+    letter-spacing: 1.2px;
+    transition: 0.2s all linear;
+
+}
+
+.btn-purple {
+    /* background-color: #9a30e4; */
+    background: rgb(154, 48, 228);
+    background: linear-gradient(90deg, rgba(154, 48, 228, 1) 0%, rgba(228, 123, 195, 1) 100%);
+    color: white;
+}
+
+.btn-purple:hover {
+    border: 2px solid black;
+    transition: 0.2s all ease-in;
+}
+
+.button:hover{
+    color: white;
+    background: rgb(154, 48, 228);
+    transition: 0.2s all linear;
+}
+
+.request-accept{
+    padding: 7px 20px;
+    width: 100px;
+}
+
+.ml-70{
+    margin-left: 70px;
+}
