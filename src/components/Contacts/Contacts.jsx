@@ -1,24 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Button from '../Button';
 
-function Contacts({ user }) {
+function Contacts({ user , setActiveMenu ,setActiveReceipient}) {
   const api = axios.create({
     baseURL: 'http://localhost:4000'
   });
+
+  const handleContactClick = (username) => {
+    setActiveReceipient(username)
+    console.log(username)
+    setActiveMenu("chats")
+  }
 
   const [contacts, setContacts] = useState([]);
   const username = user;
 
   useEffect(() => {
     getContacts();
-  }, []);
+  }, [0]);
 
   const getContacts = () => {
     api
       .get(`/api/contacts/${username}`)
       .then((response) => {
         console.log(response.data);
-        setContacts(response.data.contacts); // Update state with response.data.contacts
+        setContacts(response.data.contacts); 
       })
       .catch((error) => {
         console.error('Failed to get contacts', error);
@@ -46,10 +53,7 @@ function Contacts({ user }) {
                   {contact.username}
                 </div>
               </div>
-              {/* <div className="requests-button-container">
-                <Button label={<i class="fa-solid fa-check"></i>} toggleComponent={() => acceptFriendRequest(request.sender)} btnclass={"button request-accept"}></Button>
-                <Button label={<i class="fa-solid fa-x"></i>} toggleComponent={() => rejectFriendRequest(request.sender)} btnclass={"button request-accept"}></Button>
-              </div> */}
+              <Button label={"Send Message"} btnclass={"button request"} toggleComponent={() => handleContactClick(contact.username)} ></Button>
             </div>
           ))}
         </div>
