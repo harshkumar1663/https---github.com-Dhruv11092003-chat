@@ -2,17 +2,23 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Button from '../Button';
 
-function Contacts({ user }) {
+function Contacts({ user , setActiveMenu ,setActiveReceipient}) {
   const api = axios.create({
     baseURL: 'http://localhost:4000'
   });
+
+  const handleContactClick = (username) => {
+    setActiveReceipient(username)
+    console.log(username)
+    setActiveMenu("chats")
+  }
 
   const [contacts, setContacts] = useState([]);
   const username = user;
 
   useEffect(() => {
     getContacts();
-  }, []);
+  }, [0]);
 
   const getContacts = () => {
     api
@@ -47,7 +53,7 @@ function Contacts({ user }) {
                   {contact.username}
                 </div>
               </div>
-              <Button label={"Send Message"} btnclass={"button request"} ></Button>
+              <Button label={"Send Message"} btnclass={"button request"} toggleComponent={() => handleContactClick(contact.username)} ></Button>
             </div>
           ))}
         </div>

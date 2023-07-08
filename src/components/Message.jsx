@@ -11,7 +11,7 @@ function Message({ label, cls }) {
                 </div>
             </div>
         )
-
+    else if(cls === "message receiver-msg")
     return (
         <>
             <div className="message-contianer-receiver">

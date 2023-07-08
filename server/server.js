@@ -83,7 +83,7 @@ const UserData = userDataDBConnection.model('UserData', UserDataSchema);
 // const User = mongoose.model('User', UserSchema);
 
 const corsOptions = {
-  origin: 'http://localhost:3000', // Replace with the actual URL of your frontend application
+  origin: ['http://localhost:3000', 'http://localhost:3001']
 };
 
 app.use(cors(corsOptions));
@@ -458,10 +458,76 @@ app.get('/api/contacts/:username', async (req, res) => {
   }
 });
 
+// Send message
+app.post('/api/send-message', (req, res) => {
+  console.log("msg send api called")
+  const { sender, receipient, content } = req.body;
+  UserData.findOne({ username: sender })
+    .then((senderData) => {
+      if (!senderData) {
+        return res.status(404).json({ error: 'Sender not found' });
+      }
+      UserData.findOne({ username: receipient })
+        .then((recipientData) => {
+          if (!recipientData) {
+            return res.status(404).json({ error: 'Recipient not found' });
+          }
+          let chat = senderData.chats.find((chat) => chat.contact === receipient);
+          if (!chat) {
+            // creating chat
+            chat = {
+              contact: receipient,
+              messages: [],
+            };
+            senderData.chats.push(chat);
+            console.log("Chat created successfully")
+          }
+          const message = {
+            sender,
+            content,
+            timestamp: Date.now(),
+          };
+          chat.messages.push(message);
 
+          // Save the sender's data
+          senderData
+            .save()
+            .then(() => {
+              res.status(200).json({ message: 'Message sent successfully', content: message.content });
+            })
+            .catch((error) => {
+              console.error('Failed to send message', error);
+              res.status(500).json({ error: 'Failed to send message' });
+            });
+        })
+        .catch((error) => {
+          console.error('Failed to find recipient user data', error);
+          res.status(500).json({ error: 'Failed to send message' });
+        });
+    })
+    .catch((error) => {
+      console.error('Failed to find sender user data', error);
+      res.status(500).json({ error: 'Failed to send message' });
+    });
+});
 
-
-
+// Retrieve chats 
+app.get('/api/chats/:receipient', (req, res) => {
+  console.log("get msg api called")
+  const { receipient } = req.params;
+  // Find the user data document for the recipient
+  UserData.findOne({ username: receipient })
+    .then((userData) => {
+      if (!userData) {
+        return res.status(404).json({ error: 'Recipient not found' });
+      }
+      res.status(200).json({ chats: userData.chats });
+    })
+    .catch((error) => {
+      console.error('Failed to find recipient user data', error);
+      res.status(500).json({ error: 'Failed to retrieve chats' });
+    });
+});
 
 const port = 4000;
 app.listen(port, () => {

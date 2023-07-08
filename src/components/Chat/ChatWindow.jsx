@@ -8,7 +8,7 @@ import Contacts from '../Contacts/Contacts'
 
 function ChatWindow({ user }) {
     const [activeMenu, setActiveMenu] = useState("chats");
-
+    const [receipient, setActiveReceipient] = useState("");
     return (
         <>
           <div className="hidden">
@@ -18,9 +18,9 @@ function ChatWindow({ user }) {
             <div className="chat-window">
               <ChatMenu setActiveMenu={setActiveMenu} />
               {activeMenu === "chats" && <Chats />}
-              {activeMenu === "chats" && <Chat user={user} />}
+              {activeMenu === "chats" && <Chat user={user} recipient={receipient} />}
               {activeMenu === "friend-requests" && <RequestWindow user={user} />}
-              {activeMenu === "contacts" && <Contacts user={user}/>}
+              {activeMenu === "contacts" && <Contacts user={user} setActiveMenu={setActiveMenu} setActiveReceipient={setActiveReceipient}/>}
             </div>
           </div>
         </>
