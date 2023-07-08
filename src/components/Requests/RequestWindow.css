@@ -12,6 +12,8 @@
     font-weight: 400;
     font-size: large;
     letter-spacing: 3px;
+    border: none;
+    /* border: 1px solid red ; */
 }
 .requests-container{
     flex-basis: 82%;
@@ -25,7 +27,7 @@
     padding: 0px 50px;
     justify-content: space-between;
     border-bottom: 1px solid rgba(0 0 0 /0.2);
-    border-top: 1px solid rgba(0 0 0 /0.2) ;
+    /* border-top: 1px solid rgba(0 0 0 /0.2) ; */
 }
 .name-image-request{
     display: flex;

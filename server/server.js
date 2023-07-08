@@ -430,6 +430,35 @@ app.get('/api/contacts/:username', async (req, res) => {
   }
 });
 
+// get user's contacts
+app.get('/api/contacts/:username', async (req, res) => {
+  const { username } = req.params;
+  try {
+    const user = await UserData.findOne({ username });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const contacts = await Promise.all(user.contacts.map(async (contactUsername) => {
+      const contact = await UserData.findOne({ username: contactUsername });
+      if (!contact) {
+        return null; // Handle missing contact
+      }
+      return {
+        username: contactUsername,
+        profilePicture: contact.profilePicture,
+        messages: contact.chats.find((chat) => chat.contact === username)?.messages || [],
+      };
+    }));
+
+    res.json({ contacts: contacts.filter((contact) => contact !== null) });
+  } catch (error) {
+    console.error('Failed to get user contacts', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+
 
 
 

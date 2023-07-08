@@ -1,16 +1,12 @@
-import React from 'react'
-import './ChatPreview.css'
-function ChatPreview({name , img_source}) {
-    return (
-        <>
-            <div className="preview-container">
-                <div className="profile-picture">
-                    <img src={img_source} alt="" />
-                </div>
-                <h4 className='chat_preview_name'>{name}</h4>
-            </div>
-        </>
-    )
+import React from 'react';
+
+function ChatPreview({ name, img_source }) {
+  return (
+    <div className="chat-preview">
+      <img src={img_source} alt="Profile" className="profile-picture" />
+      <div className="contact-name">{name}</div>
+    </div>
+  );
 }
 
-export default ChatPreview
+export default ChatPreview;

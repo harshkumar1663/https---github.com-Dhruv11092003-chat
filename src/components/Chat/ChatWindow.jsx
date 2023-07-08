@@ -7,7 +7,7 @@ import RequestWindow from '../Requests/RequestWindow'
 import Contacts from '../Contacts/Contacts'
 
 function ChatWindow({ user }) {
-    const [activeMenu, setActiveMenu] = useState("contacts");
+    const [activeMenu, setActiveMenu] = useState("chats");
 
     return (
         <>
