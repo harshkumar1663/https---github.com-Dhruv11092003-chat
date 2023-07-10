@@ -12,7 +12,6 @@ function Chats({ cls, user , setActiveReceipient }) {
     });
 
     const fetchContacts = async () => {
-      alert(user)
       try {
         const response = await api.get(`/api/chat-data/${user}`);
         console.log(user)
@@ -26,8 +25,9 @@ function Chats({ cls, user , setActiveReceipient }) {
     fetchContacts();
   }, []);
 
-  const filteredContacts = contacts.filter((contact) => {
-    return contact.messages.length > 0; // Filter contacts with at least one chat message
+
+
+  const filteredContacts = contacts.filter((contact) => { return (contact.contact !== user) && (contact.messages.length > 0); 
   });
 
   if (cls === 'None') cls = '';
