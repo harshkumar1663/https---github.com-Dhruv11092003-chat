@@ -30,7 +30,7 @@ function Chat({ user, recipient }) {
     };
 
     api
-      .post('/api/send-message', { sender: user, receipient: recipient, content: messageContent })
+      .post('/api/send-message', { sender: user, recipient: recipient, content: messageContent })
       .then((response) => {
         const newMessage = response.data;
         setMessages([...messages, newMessage]);
@@ -47,7 +47,7 @@ function Chat({ user, recipient }) {
 
   const handleInputKeyPress = (event) => {
     if (event.key === 'Enter') {
-      event.preventDefault(); // Prevent the form from submitting
+      event.preventDefault(); 
       handleMessageSend(messageInput);
     }
   };
@@ -85,7 +85,7 @@ function Chat({ user, recipient }) {
           <div className="chat-exchange-window">
             {messages.map((message, index) => (
               <Message
-                key={message.sender}
+                key={index}
                 label={message.content}
                 cls={message.sender === recipient ? 'message sender-msg' : 'message receiver-msg'}
               ></Message>

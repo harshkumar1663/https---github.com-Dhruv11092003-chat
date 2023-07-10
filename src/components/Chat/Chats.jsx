@@ -3,21 +3,28 @@ import './Chats.css';
 import ChatPreview from './ChatPreview';
 import axios from 'axios';
 
-function Chats({ cls, user }) {
+function Chats({ cls, user , setActiveReceipient }) {
   const [contacts, setContacts] = useState([]);
 
   useEffect(() => {
+    const api = axios.create({
+      baseURL: 'http://localhost:4000'
+    });
+
     const fetchContacts = async () => {
+      alert(user)
       try {
-        const response = await axios.get(`/api/contacts/${user}`);
-        setContacts(response.data.contacts);
+        const response = await api.get(`/api/chat-data/${user}`);
+        console.log(user)
+        console.log(response.data.chatData)
+        setContacts(response.data.chatData);
       } catch (error) {
-        console.error('Failed to fetch contacts', error);
+        console.error('Failed to fetch chat data', error);
       }
     };
 
     fetchContacts();
-  }, [user]);
+  }, []);
 
   const filteredContacts = contacts.filter((contact) => {
     return contact.messages.length > 0; // Filter contacts with at least one chat message
@@ -31,9 +38,11 @@ function Chats({ cls, user }) {
         <div className="chat-heading">Chats</div>
         {filteredContacts.map((contact) => (
           <ChatPreview
-            key={contact.username}
-            name={contact.username}
+            key={contact.contact}
+            name={contact.contact}
             img_source={contact.profilePicture}
+            messages={contact.messages}
+            setActiveReceipient = {setActiveReceipient}
           />
         ))}
       </div>

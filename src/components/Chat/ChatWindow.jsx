@@ -17,7 +17,7 @@ function ChatWindow({ user }) {
           <div className="main-window">
             <div className="chat-window">
               <ChatMenu setActiveMenu={setActiveMenu} />
-              {activeMenu === "chats" && <Chats />}
+              {activeMenu === "chats" && <Chats user={user} setActiveReceipient={setActiveReceipient} />}
               {activeMenu === "chats" && <Chat user={user} recipient={receipient} />}
               {activeMenu === "friend-requests" && <RequestWindow user={user} />}
               {activeMenu === "contacts" && <Contacts user={user} setActiveMenu={setActiveMenu} setActiveReceipient={setActiveReceipient}/>}
