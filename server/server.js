@@ -39,10 +39,35 @@ app.use('/api/profile-pictures', express.static(path.join(__dirname, 'public', '
 const location_to_save_DP = path.join(__dirname , 'public' , 'ProfilePictures')
 
 // get profile picture
-app.get('/api/profile-pictures/:filename', (req, res) => {
-  let { filename } = req.params;
-  const filePath = path.join(__dirname, 'public', 'ProfilePictures', filename);
-  res.sendFile(filePath);
+const getUserProfilePicture = async (username) => {
+  try {
+    const userData = await UserData.findOne({ username });
+    if (userData) {
+      return userData.profilePicture;
+    }
+  } catch (error) {
+    console.error('Failed to retrieve user profile picture:', error);
+  }
+  return null; // Return null if user profile picture is not found or an error occurs
+};
+
+app.get('/api/profile-pictures/:filename', async (req, res) => {
+  const { filename } = req.params;
+
+  if (filename.includes('-')) {
+    // If full file name with extension is provided
+    const filePath = path.join(__dirname, 'public', 'ProfilePictures', filename);
+    res.sendFile(filePath);
+  } else {
+    // If only username is provided, retrieve the profile picture file name
+    const profilePicture = await getUserProfilePicture(filename);
+    if (profilePicture) {
+      const filePath = path.join(__dirname, 'public', 'ProfilePictures', profilePicture);
+      res.sendFile(filePath);
+    } else {
+      res.status(404).json({ error: 'Profile picture not found' });
+    }
+  }
 });
 
 // schemas
@@ -56,22 +81,24 @@ const User = authDBConnection.model('User', UserSchema);
 
 // new user-data schema
 const UserDataSchema = new mongoose.Schema({
-  username: String,
-  profilePicture : String,
-  contacts: [String], // Array of contacts usernames
+  username: { type: String, unique: true },
+  profilePicture: String,
+  contacts: [String], // Array of contact usernames
   chats: [{
     contact: String, // Username of the contact
     messages: [{
       sender: String, // Username of the sender
+      recipient: String, // Username of the recipient
       content: String, // Message content
       timestamp: { type: Date, default: Date.now }, // Time of the message
     }],
   }],
   friendRequests: [{
-    sender: String, // user who sent the request
+    sender: String, // User who sent the request
     timestamp: { type: Date, default: Date.now }, // Time of the request
   }],
 });
+
 const UserData = userDataDBConnection.model('UserData', UserDataSchema);
 
 // const UserSchema = new mongoose.Schema({
@@ -460,61 +487,68 @@ app.get('/api/contacts/:username', async (req, res) => {
 
 // Send message
 app.post('/api/send-message', (req, res) => {
-  console.log("msg send api called")
-  const { sender, receipient, content } = req.body;
-  UserData.findOne({ username: sender })
-    .then((senderData) => {
-      if (!senderData) {
-        return res.status(404).json({ error: 'Sender not found' });
+  const { sender, recipient, content } = req.body;
+  console.log("send msg API called")
+  console.log('Sender:', sender);
+  console.log('Recipient:', recipient);
+  // Find the user data documents for the sender and recipient
+  Promise.all([
+    UserData.findOne({ username: sender }),
+    UserData.findOne({ username: recipient }),
+  ])
+  .then(([senderData, recipientData]) => {
+    // console.log('Sender Data:', senderData);
+    // console.log('Recipient Data:', recipientData);
+      if (!senderData || !recipientData) {
+        return res.status(404).json({ error: 'Sender or recipient not found' });
       }
-      UserData.findOne({ username: receipient })
-        .then((recipientData) => {
-          if (!recipientData) {
-            return res.status(404).json({ error: 'Recipient not found' });
-          }
-          let chat = senderData.chats.find((chat) => chat.contact === receipient);
-          if (!chat) {
-            // creating chat
-            chat = {
-              contact: receipient,
-              messages: [],
-            };
-            senderData.chats.push(chat);
-            console.log("Chat created successfully")
-          }
-          const message = {
-            sender,
-            content,
-            timestamp: Date.now(),
-          };
-          chat.messages.push(message);
 
-          // Save the sender's data
-          senderData
-            .save()
-            .then(() => {
-              res.status(200).json({ message: 'Message sent successfully', content: message.content });
-            })
-            .catch((error) => {
-              console.error('Failed to send message', error);
-              res.status(500).json({ error: 'Failed to send message' });
-            });
+      // Update sender's chat
+      let senderChat = senderData.chats.find((chat) => chat.contact === recipient);
+      if (!senderChat) {
+        senderChat = { contact: recipient, messages: [] };
+        senderData.chats.push(senderChat);
+      }
+      senderChat.messages.push({
+        sender: sender,
+        recipient: recipient,
+        content: content,
+      });
+
+      // Update recipient's chat
+      let recipientChat = recipientData.chats.find((chat) => chat.contact === sender);
+      if (!recipientChat) {
+        recipientChat = { contact: sender, messages: [] };
+        recipientData.chats.push(recipientChat);
+      }
+      recipientChat.messages.push({
+        sender: sender,
+        recipient: recipient,
+        content: content,
+      });
+
+      // Save both user data documents
+      Promise.all([senderData.save(), recipientData.save()])
+        .then(() => {
+          console.log("message saved successfuly")
+          res.status(200).json({ message: 'Message sent successfully' });
         })
         .catch((error) => {
-          console.error('Failed to find recipient user data', error);
+          console.error('Failed to save user data', error);
           res.status(500).json({ error: 'Failed to send message' });
         });
     })
     .catch((error) => {
-      console.error('Failed to find sender user data', error);
+      console.error('Failed to find user data', error);
       res.status(500).json({ error: 'Failed to send message' });
     });
 });
 
+
 // Retrieve chats 
 app.get('/api/chats/:receipient', (req, res) => {
-  console.log("get msg api called")
   const { receipient } = req.params;
+  console.log("get msg api called" ,receipient)
   // Find the user data document for the recipient
   UserData.findOne({ username: receipient })
     .then((userData) => {
@@ -526,6 +560,24 @@ app.get('/api/chats/:receipient', (req, res) => {
     .catch((error) => {
       console.error('Failed to find recipient user data', error);
       res.status(500).json({ error: 'Failed to retrieve chats' });
+    });
+});
+
+// get chat data for chats (only those contacts whom the user has chats with)
+app.get('/api/chat-data/:username', (req, res) => {
+  console.log("Filter msg api called")
+  const { username } = req.params;
+  UserData.findOne({ username })
+    .then((userData) => {
+      if (!userData) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      const filteredChatData = userData.chats.filter((chat) => chat.messages.length > 0);
+      res.status(200).json({ chatData: filteredChatData });
+    })
+    .catch((error) => {
+      console.error('Failed to retrieve chat data', error);
+      res.status(500).json({ error: 'Failed to retrieve chat data' });
     });
 });
 
