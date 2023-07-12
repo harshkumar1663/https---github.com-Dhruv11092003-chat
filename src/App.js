@@ -46,7 +46,10 @@ function App() {
           </>
         </CSSTransition>
         <CSSTransition in={!showSignIn} classNames="fade" timeout={200} unmountOnExit mountOnEnter >
+          <>
           <Signup toggleComponent={toggleComponent} handleLogin={handleLogin} />
+          {showPopup && <Alert message="Sign Up Successfull, redirecting to home page..." />}
+          </>
         </CSSTransition>
       </div>
     </>

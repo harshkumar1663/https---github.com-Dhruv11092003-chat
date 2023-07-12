@@ -3,6 +3,7 @@ import './Leftpane.css';
 import Input from '../Input';
 import Button from '../Button';
 import axios from 'axios';
+import Alert from '../Alert/Alert'
 
 const api = axios.create({
   baseURL: 'http://localhost:4000',
@@ -14,7 +15,9 @@ function Leftpane({ toggleComponent }) {
   const [selectedProfilePicture, setSelectedProfilePicture] = useState(null);
   const [error, setError] = useState('');
   const [isUsernameAvailable, setIsUsernameAvailable] = useState(true);
-  const [showPassword, setShowPassword] = useState(false); 
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+
 
   const checkUsernameAvailability = (username) => {
     api
@@ -59,25 +62,30 @@ function Leftpane({ toggleComponent }) {
     };
 
     console.log(userDetails);
-    if (username !== "")
-      {api
+    if (username !== "") {
+      api
         .post('/api/signup', userDetails, {
           headers: { 'Content-Type': 'application/json' },
         })
-        .then((response) => {
-          if (response.status === 201) {
-            alert('Sign up successful redirecting to HomePage');
+      .then((response) => {
+        if (response.status === 201) {
+          setShowPopup(true)
+          setTimeout(() => {
+            console.log(username, "Login successful");
+            // alert('Sign up successful redirecting to HomePage');
             window.location.reload()
-          }
-          else if (response.status === 401) {
-            alert("Invalid Username or Password")
-          } else {
-            alert('Sign up failed');
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+            setShowPopup(false);
+          }, 2000);
+        }
+        else if (response.status === 401) {
+          alert("Invalid Username or Password")
+        } else {
+          alert('Sign up failed');
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
 
       setUsername('');
       setPassword('');
@@ -88,7 +96,7 @@ function Leftpane({ toggleComponent }) {
       setError("Please write a username")
     }
   }
-  
+
 
   const handleUsername = (event) => {
     const newUsername = event.target.value;
@@ -103,7 +111,7 @@ function Leftpane({ toggleComponent }) {
     if (file) {
       const allowedExtensions = ['jpg', 'jpeg', 'png'];
       const fileExtension = file.name.split('.').pop().toLowerCase();
-      
+
       if (!allowedExtensions.includes(fileExtension)) {
         setError('Invalid file type. Only JPG, JPEG, and PNG files are allowed.');
         return;
@@ -120,6 +128,7 @@ function Leftpane({ toggleComponent }) {
 
   return (
     <>
+    {showPopup && <Alert message="Sign Up Successfull, redirecting to home page..." />}
       <div className="left-pane-signup">
         <div className="signin-cont">
           <h2 className="signin">Sign Up</h2>
@@ -134,14 +143,14 @@ function Leftpane({ toggleComponent }) {
               <div className="error ml-40">Username is already taken</div>
             )}
             <Input label="Password" placeholder="Enter your password" value={password}
-              type={showPassword ? 'text' : 'password'} 
+              type={showPassword ? 'text' : 'password'}
               onChange={(e) => setPassword(e.target.value)}
               icon={showPassword ? (
                 <i className="fa-solid fa-eye-slash"></i>
               ) : (
                 <i className="fa-solid fa-eye"></i>
               )}
-              onIconClick={() => setShowPassword(!showPassword)} 
+              onIconClick={() => setShowPassword(!showPassword)}
             />
             <div className="ml-40">
               <label htmlFor="profilePicture" className='select-dp'>Click here to select Profile Picture</label>
