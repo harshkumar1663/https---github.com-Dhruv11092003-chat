@@ -30,7 +30,7 @@ function Rightpane({ toggleComponent, handleLogin }) {
       .then((response) => {
         if (response.status === 200) {
           let name = username
-          alert('Sign in successful');
+          // alert('Sign in successful');
           handleLogin(name); // Call handleLogin on successful sign-in
         } else if (response.status === 401) {
           alert('Invalid Username or Password');
