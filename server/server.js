@@ -6,7 +6,16 @@ const sizeOf = require('image-size');
 const app = express();
 const cors = require('cors');
 const bcrypt = require("bcrypt");
+const http = require('http');
+const socketIO = require('socket.io');
 app.use(express.json({ limit: '10mb' }));
+const server = http.createServer(app);
+const io = socketIO(server, {
+  cors: {
+    origin: ['http://localhost:3000', 'http://localhost:3001'],
+    methods: ['GET', 'POST'],
+  },
+});
 
 // connecting to AUTH database
 const authDBConnection = mongoose.createConnection('mongodb://127.0.0.1:27017/mydata', {
@@ -101,19 +110,75 @@ const UserDataSchema = new mongoose.Schema({
 
 const UserData = userDataDBConnection.model('UserData', UserDataSchema);
 
-// const UserSchema = new mongoose.Schema({
-//   username: String,
-//   password: String,
-//   profilePicture: String,
-// });
 
-// const User = mongoose.model('User', UserSchema);
 
 const corsOptions = {
   origin: ['http://localhost:3000', 'http://localhost:3001']
 };
 
 app.use(cors(corsOptions));
+
+// socketIO connection
+io.on('connection', (socket) => {
+  socket.on('message', (message) => {
+    console.log('message event received:', message);
+    
+    const { sender, recipient, content } = message;
+    Promise.all([
+      UserData.findOne({ username: sender }),
+      UserData.findOne({ username: recipient }),
+    ])
+      .then(([senderData, recipientData]) => {
+        if (!senderData || !recipientData) {
+          console.error('Sender or recipient not found');
+          return;
+        }
+
+        // add msg to sender chat
+        let senderChat = senderData.chats.find((chat) => chat.contact === recipient);
+        if (!senderChat) {
+          senderChat = { contact: recipient, messages: [] };
+          senderData.chats.push(senderChat);
+        }
+        senderChat.messages.push({
+          sender: sender,
+          recipient: recipient,
+          content: content,
+          timestamp: Date.now(),
+        });
+
+        // add msg to receiver chat
+        let recipientChat = recipientData.chats.find((chat) => chat.contact === sender);
+        if (!recipientChat) {
+          recipientChat = { contact: sender, messages: [] };
+          recipientData.chats.push(recipientChat);
+        }
+        recipientChat.messages.push({
+          sender: sender,
+          recipient: recipient,
+          content: content,
+          timestamp: Date.now(),
+        });
+
+        // save the documents
+        Promise.all([senderData.save(), recipientData.save()])
+          .then(() => {
+            socket.broadcast.emit('message', message);
+          })
+          .catch((error) => {
+            console.error('Failed to save user data', error);
+          });
+      })
+      .catch((error) => {
+        console.error('Failed to find user data', error);
+      });
+  });
+
+  socket.on('disconnect', () => {
+  });
+});
+
+
 
 // user signup
 app.post("/api/signup", (req, res) => {
@@ -151,6 +216,9 @@ app.post("/api/signup", (req, res) => {
       newUserUserData
         .save()
         .then(() => {
+          console.log("----------------------------")
+          console.log("User Signup : " + username)
+          console.log("----------------------------")
           res.status(201).json({ message: "Data saved successfully" });
         })
         .catch((error) => {
@@ -202,6 +270,9 @@ app.post("/api/signin", (req, res) => {
         // Compare the provided password with the stored hashed password
         const isPasswordValid = bcrypt.compareSync(password, user.password);
         if (isPasswordValid) {
+          console.log("----------------------------")
+          console.log("User SignIn : " + username)
+          console.log("----------------------------")
           res.status(200).json({ message: "Sign in successful" });
         } else {
           res.status(401).json({ error: "Invalid username or password" });
@@ -233,6 +304,8 @@ app.get('/api/check-username/:username', (req, res) => {
 app.post('/api/send-friend-request', (req, res) => {
   const sender = req.body.user
   const receiver = req.body.username
+  console.log("----------------------------")
+  console.log("Frnd Rqst Sent by : " + sender + " to " + receiver)
   // Find the receiver data
   UserData.findOne({ username: receiver })
     .then((userData) => {
@@ -253,6 +326,7 @@ app.post('/api/send-friend-request', (req, res) => {
       userData
         .save()
         .then(() => {
+          console.log("Rqst Sent Successfully")
           res.status(200).json({ message: 'Friend request sent successfully' });
         })
         .catch((error) => {
@@ -264,6 +338,7 @@ app.post('/api/send-friend-request', (req, res) => {
       console.error('Failed to find receiver user data', error);
       res.status(500).json({ error: 'Failed to send friend request' });
     });
+    console.log("----------------------------")
 });
 
 // user search
@@ -289,7 +364,9 @@ app.get('/api/search-users-data/:searchText', (req, res) => {
 // Retrieve friend requests for a user
 app.get('/api/friend-requests/:username', (req, res) => {
   const { username } = req.params;
-
+  console.log("----------------------------")
+  console.log("Retreive Frnd Rqsts for : " + username)
+  console.log("----------------------------")
   // Find the user data document
   UserData.findOne({ username })
     .then((userData) => {
@@ -581,7 +658,11 @@ app.get('/api/chat-data/:username', (req, res) => {
     });
 });
 
+// const port = 4000;
+// app.listen(port, () => {
+//   console.log(`Server is running on port ${port}`);
+// });
 const port = 4000;
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+server.listen(port, () => {
+  console.log(`Socket.IO server is running on port ${port}`);
 });
