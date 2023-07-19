@@ -6,7 +6,7 @@ import Message from '../Message';
 import axios from 'axios';
 import { io } from 'socket.io-client';
 
-function Chat({ user, recipient }) {
+function Chat({ user, receipient }) {
   const [showChat, setShowChat] = useState(true);
   const [contacts, setContacts] = useState([]);
   const [messages, setMessages] = useState([]);
@@ -20,7 +20,7 @@ function Chat({ user, recipient }) {
   const socket = io('http://localhost:4000');
 
   useEffect(() => {
-    api.get(`/api/chats/${recipient}`)
+    api.get(`/api/chats/${receipient}`)
       .then((response) => {
         const chatData = response.data.chats;
         if (Array.isArray(chatData) && chatData.length > 0) {
@@ -57,7 +57,7 @@ function Chat({ user, recipient }) {
   const handleMessageSend = (messageContent) => {
     const message = {
       sender: user,
-      recipient: recipient,
+      recipient: receipient,
       content: messageContent
     };
 
@@ -100,7 +100,7 @@ function Chat({ user, recipient }) {
               <Message
                 key={index}
                 label={message.content}
-                cls={message.sender === recipient ? 'message sender-msg' : 'message receiver-msg'}
+                cls={message.sender === receipient ? 'message sender-msg' : 'message receiver-msg'}
               ></Message>
             ))}
           </div>

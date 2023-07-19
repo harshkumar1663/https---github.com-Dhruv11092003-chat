@@ -3,7 +3,7 @@ import './Chats.css';
 import ChatPreview from './ChatPreview';
 import axios from 'axios';
 
-function Chats({ cls, user , setActiveReceipient }) {
+function Chats({ user, setActiveMenu, setActiveReceipient }) {
   const [contacts, setContacts] = useState([]);
 
   useEffect(() => {
@@ -14,8 +14,6 @@ function Chats({ cls, user , setActiveReceipient }) {
     const fetchContacts = async () => {
       try {
         const response = await api.get(`/api/chat-data/${user}`);
-        console.log(user)
-        console.log(response.data.chatData)
         setContacts(response.data.chatData);
       } catch (error) {
         console.error('Failed to fetch chat data', error);
@@ -23,26 +21,22 @@ function Chats({ cls, user , setActiveReceipient }) {
     };
 
     fetchContacts();
-  }, []);
+  }, [user]);
 
-
-
-  const filteredContacts = contacts.filter((contact) => { return (contact.contact !== user) && (contact.messages.length > 0); 
-  });
-
-  if (cls === 'None') cls = '';
+  const filteredContacts = contacts.filter(
+    (contact) => contact.contact !== user && contact.messages.length > 0
+  );
 
   return (
     <>
-      <div className={`chats ${cls}`}>
+      <div className="chats">
         <div className="chat-heading">Chats</div>
         {filteredContacts.map((contact) => (
           <ChatPreview
             key={contact.contact}
             name={contact.contact}
-            img_source={contact.profilePicture}
-            messages={contact.messages}
-            setActiveReceipient = {setActiveReceipient}
+            setActiveReceipient={setActiveReceipient}
+            setActiveMenu={setActiveMenu}
           />
         ))}
       </div>
