@@ -3,15 +3,21 @@
         width: 0px;
         bottom: -100px;
         box-shadow: none;
+        visibility: hidden;
+        text-indent: -9999px;
     }
 
     30% {
+        
+        text-indent: 0px;
         bottom: 50vh;
         width: 15vw;
-        box-shadow: 0px 0px 20px 8px rgb(154, 48, 228);
+        visibility: visible;
+        box-shadow: 0px 0px 0px 0px rgb(0 0 0);
     }
 
     80% {
+        text-indent: 0px;
         bottom: 50vh;
         width: 15vw;
         box-shadow: 0px 0px 20px 8px rgb(154, 48, 228);
@@ -26,6 +32,7 @@
 
 
 .popup {
+    visibility: hidden;
     position: fixed;
     bottom: -100px;
     left: 50%;
