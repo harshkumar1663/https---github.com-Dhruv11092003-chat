@@ -9,13 +9,13 @@ function ChatMenu({ setActiveMenu }) {
   const logout = () => {
     // Perform any necessary logout actions
     window.location.href = '/'; // Redirect to the home page after logout
-    
+
   };
 
   const timerRef = useRef(null); // Reference to the timer
 
   const startLogoutTimer = () => {
-    timerRef.current = setTimeout(logout,5*60000); // 5 minute in milliseconds
+    timerRef.current = setTimeout(logout, 5 * 60000); // 5 minute in milliseconds
   };
 
   const resetLogoutTimer = () => {
@@ -54,7 +54,9 @@ function ChatMenu({ setActiveMenu }) {
           <p onClick={() => handleMenuClick('chats')}>Chats</p>
         </div>
         <div className="contacts chat-menu-item">
-          <p>Contacts</p>
+          <p onClick={() => handleMenuClick('contacts')}>
+            Contacts
+          </p>
         </div>
         <div className="friend-requests chat-menu-item">
           <p onClick={() => handleMenuClick('friend-requests')}>
