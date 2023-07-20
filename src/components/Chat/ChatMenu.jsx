@@ -9,7 +9,7 @@ function ChatMenu({ setActiveMenu }) {
   const logout = () => {
     // Perform any necessary logout actions
     window.location.href = '/'; // Redirect to the home page after logout
-    alert("You are logged out due to inactivity")
+    
   };
 
   const timerRef = useRef(null); // Reference to the timer
