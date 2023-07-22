@@ -1,0 +1,8 @@
+.root-heading{
+    width: 100%;
+    border: 2px solid red;
+    height: 6vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

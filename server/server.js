@@ -85,6 +85,10 @@ const UserSchema = new mongoose.Schema({
   username: String,
   password: String,
   profilePicture: String,
+  incorrectPasswordAttempts : {type : Number , default : 0},
+  isBlocked : {type : Boolean , default : false},
+  isRootUser : {type : Boolean , default : false}
+
 });
 const User = authDBConnection.model('User', UserSchema);
 
@@ -110,6 +114,10 @@ const UserDataSchema = new mongoose.Schema({
 
 const UserData = userDataDBConnection.model('UserData', UserDataSchema);
 
+const ROOT_USER_CREDENTIALS = {
+  username: 'root',
+  password: 'rootpassword',
+};
 
 
 const corsOptions = {
@@ -178,6 +186,37 @@ io.on('connection', (socket) => {
   });
 });
 
+
+// get all users for ROOT USER
+app.get('/api/users', async (req, res) => {
+  try {
+    const users = await User.find({}, '_id username password profilePicture isBlocked');
+    res.status(200).json(users);
+  } catch (error) {
+    console.error('Failed to fetch all users', error);
+    res.status(500).json({ error: 'Failed to fetch users' });
+  }
+});
+
+// update user block
+app.put('/api/users/:userId', (req, res) => {
+  const { userId } = req.params;
+  const { blocked } = req.body;
+
+  console.log(userId + blocked)
+  User.findByIdAndUpdate(userId, { $set: { isBlocked: blocked } }, { new: true })
+    .then((updatedUser) => {
+      if (!updatedUser) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      res.status(200).json({ message: 'User status updated successfully', user: updatedUser });
+    })
+    .catch((error) => {
+      console.error('Failed to update user status', error);
+      res.status(500).json({ error: 'Failed to update user status' });
+    });
+});
 
 
 // user signup
@@ -260,24 +299,40 @@ function saveProfilePicture(base64Data, username) {
 
 }
 
-
-// user signin
+// sign in
 app.post("/api/signin", (req, res) => {
   const { username, password } = req.body;
+  // check for ROOT USER
+  if (username === ROOT_USER_CREDENTIALS.username && password === ROOT_USER_CREDENTIALS.password) {
+    console.log("----------------------------");
+    console.log("Root User SignIn: " + username);
+    console.log("----------------------------");
+    return res.status(200).json({ message: "Root user login successful" });
+  }
+  // check for normal user
   User.findOne({ username })
     .then((user) => {
-      if (user) {
-        // Compare the provided password with the stored hashed password
-        const isPasswordValid = bcrypt.compareSync(password, user.password);
-        if (isPasswordValid) {
-          console.log("----------------------------")
-          console.log("User SignIn : " + username)
-          console.log("----------------------------")
-          res.status(200).json({ message: "Sign in successful" });
-        } else {
-          res.status(401).json({ error: "Invalid username or password" });
-        }
+      if (!user) {
+        return res.status(401).json({ error: "Invalid username or password" });
+      }
+      // Check if the user blocked
+      if (user.isBlocked) {
+        return res.status(403).json({ error: "Account is blocked. Try again later." });
+      }
+      const isPasswordValid = bcrypt.compareSync(password, user.password);
+      if (isPasswordValid) {
+        user.incorrectPasswordAttempts = 0;
+        user.save();
+        console.log("----------------------------");
+        console.log("Normal User SignIn: " + username);
+        console.log("----------------------------");
+        return res.status(200).json({ message: "Normal user login successful" });
       } else {
+        user.incorrectPasswordAttempts += 1;
+        if (user.incorrectPasswordAttempts >= 3) {
+          user.isBlocked = true;
+        }
+        user.save();
         res.status(401).json({ error: "Invalid username or password" });
       }
     })
@@ -286,6 +341,7 @@ app.post("/api/signin", (req, res) => {
       res.status(500).json({ error: "Failed to sign in" });
     });
 });
+
 
 // check username availability
 app.get('/api/check-username/:username', (req, res) => {

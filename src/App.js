@@ -7,6 +7,7 @@ import ChatWindow from './components/Chat/ChatWindow';
 import userReducer, { setUser, clearUser } from './components/userReducer';
 import { useDispatch, useSelector } from 'react-redux';
 import Alert from './components/Alert/Alert';
+import RootView from './components/RootView/RootView';
 
 function App() {
   const user = useSelector((state) => state);
@@ -33,6 +34,9 @@ function App() {
 
   if (isLoggedIn) {
     // Render chat window when the user is logged in
+    if (user === "root")
+    return <RootView/>
+    else
     return <ChatWindow user={user} />;
   }
 
@@ -47,7 +51,7 @@ function App() {
         </CSSTransition>
         <CSSTransition in={!showSignIn} classNames="fade" timeout={200} unmountOnExit mountOnEnter >
           <>
-          <Signup toggleComponent={toggleComponent} handleLogin={handleLogin} />
+          <Signup toggleComponent={toggleComponent}  />
           {showPopup && <Alert message="Sign Up Successfull, redirecting to home page..." />}
           </>
         </CSSTransition>
