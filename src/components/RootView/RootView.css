@@ -1,8 +1,29 @@
 .root-heading{
     width: 100%;
-    border: 2px solid red;
     height: 6vh;
     display: flex;
     justify-content: center;
     align-items: center;
+    border-bottom: 1px solid rgba(0 0 0 /0.5);
+
+}
+.root-window{
+    background-color: white;
+    border-radius: 0.32rem;
+    width: 75vw;
+    height: 80vh;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgb(0 0 0 / 0.4);
+
+}
+.user-list{
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+}
+.root-exit{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 20px 10px;
 }

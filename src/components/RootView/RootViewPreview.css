@@ -1,0 +1,17 @@
+.user-row{
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    height: 10vh;
+    padding: 4px 20vw;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(0 0 0 /0.2);
+}
+.root-checkbox{
+    align-self: center;
+    font-size: 1.5rem;
+}
+.checkbox{
+    height: 2.5vh;
+    width: 2.5vw;
+}

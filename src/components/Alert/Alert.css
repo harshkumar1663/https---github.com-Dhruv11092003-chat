@@ -8,22 +8,23 @@
     }
 
     30% {
-        
+        font-size: 20px;
         text-indent: 0px;
         bottom: 50vh;
-        width: 15vw;
+        width: 27vw;
         visibility: visible;
-        box-shadow: 0px 0px 0px 0px rgb(0 0 0);
     }
 
     80% {
         text-indent: 0px;
         bottom: 50vh;
-        width: 15vw;
-        box-shadow: 0px 0px 20px 8px rgb(154, 48, 228);
+        width: 17vw;
+        box-shadow: 0px 0px 40px 15px rgb(175, 62, 255);
+        font-size: 20px;
     }
 
     100% {
+        font-size: 0px;
         width: 0px;
         bottom: -100px;
         box-shadow: none;
@@ -41,6 +42,7 @@
     border-radius: 8px;
     opacity: 1;
     z-index: 9999;
+    padding: 5px 10px;
     animation-duration: 2s;
     animation-timing-function: ease-in-out;
 }

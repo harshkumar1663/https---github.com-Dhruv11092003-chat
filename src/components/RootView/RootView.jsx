@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './RootView.css';
 import axios from 'axios';
+import RootViewPreview from './RootViewPreview';
+import Button from '../Button';
 
 function RootView() {
   const [users, setUsers] = useState([]);
@@ -37,25 +39,19 @@ function RootView() {
   return (
     <>
       <div className="main-window">
-        <div className="chat-window">
+        <div className="root-window">
           <div className="root-heading">
             <h3>Users</h3>
           </div>
           <div className="user-list">
             {users.map((user) => (
-              <div key={user._id} className="user-row">
-                <span>{user.username}</span>
-                <span>{user.isBlocked}</span>
-                <span>
-                  Blocked:{' '}
-                  <input
-                    type="checkbox"
-                    checked={user.isBlocked}
-                    onChange={() => handleToggleBlockedStatus(user._id)}
-                  />
-                </span>
-              </div>
+              <RootViewPreview id={user._id} username={user.username} isBlocked={user.isBlocked} profilePic={user.profilePicture} handleToggleBlockedStatus={handleToggleBlockedStatus} />
             ))}
+          <div className='root-exit'>
+            <a href="/">
+              <Button label={"Exit"} btnclass={'button request small'}></Button>
+            </a>
+          </div>
           </div>
         </div>
       </div>
