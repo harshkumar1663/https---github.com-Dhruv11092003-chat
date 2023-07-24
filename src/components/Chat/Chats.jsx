@@ -24,7 +24,7 @@ function Chats({ user, setActiveMenu, setActiveReceipient }) {
   }, [user]);
 
   const filteredContacts = contacts.filter(
-    (contact) => contact.contact !== user && contact.messages.length > 0
+    (contact) => contact.contact !== user 
   );
 
   return (
